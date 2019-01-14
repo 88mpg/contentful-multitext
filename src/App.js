@@ -8,40 +8,31 @@ export default class App extends React.Component {
 	constructor(props) {
 		super(props);
 
-		const {
-			extension,
-		} = props;
-
+		const { extension } = props;
 		const existingValue = extension.field.getValue();
 		this.state = {
-			values: existingValue == null ? [] : existingValue.map((value) => ({id: uuidv1(), value})),
+			values: existingValue == null ? [] : [...existingValue],
 			focus: false,
 			dragging: false,
 		};
 	}
 
 	componentDidMount() {
-		const {
-			extension,
-		} = this.props;
-
+		console.log('componentDidMount');
+		const { extension } = this.props;
+		console.log(this.state.values);
 		extension.window.startAutoResizer();
 	}
 
 	componentWillUnmount() {
-		const {
-			extension,
-		} = this.props;
-
+		console.log('componentWillUnmount');
+		const { extension } = this.props;
 		extension.window.stopAutoResizer();
 	}
 
 	render() {
-		const {
-			values,
-			focus,
-			dragging,
-		} = this.state;
+		console.log('render');
+		const { values, focus, dragging } = this.state;
 
 		return (
 			<React.Fragment>
@@ -65,18 +56,26 @@ export default class App extends React.Component {
 	}
 
 	handleAddItemClick = () => {
+		console.log('handleAddItemClick');
 		this.setState(({values: prevValues}) => {
 			return {
-				values: [...prevValues, {id: uuidv1(), value: ''}],
+				values: [
+					...prevValues,
+					{
+						id: uuidv1(),
+						song: '',
+						duration: ''
+					}
+				],
 				focus: true,
 			};
 		}, () => {
 			this.reportValues();
-
 		});
 	}
 
 	handleDeleteItemClick = (event) => {
+		console.log('handleDeleteItemClick');
 		const li = event.currentTarget.closest('li');
 		this.setState(({values: prevValues}) => {
 			const index = prevValues.findIndex(({id}) => id === li.dataset.id);
@@ -96,6 +95,10 @@ export default class App extends React.Component {
 
 	handleChange = (event) => {
 		const input = event.currentTarget;
+		const song = event.currentTarget.closest('li')
+		const songTitle = song.querySelector('.song-title')
+		const songDuration = song.querySelector('.song-duration')
+
 		this.setState(({values: prevValues}) => {
 			const index = prevValues.findIndex(({id}) => id === input.closest('li').dataset.id);
 			if (index === -1) {
@@ -106,7 +109,11 @@ export default class App extends React.Component {
 			return {
 				values: [
 					...prevValues.slice(0, index),
-					{id: id, value: input.value},
+					{
+						id: id,
+						song: songTitle.value,
+						duration: songDuration.value
+					},
 					...prevValues.slice(index + 1),
 				],
 				focus: false,
@@ -115,6 +122,7 @@ export default class App extends React.Component {
 	}
 
 	handleSortStart = () => {
+		console.log('handleSortStart');
 		this.setState({
 			dragging: true,
 			focus: false,
@@ -122,6 +130,7 @@ export default class App extends React.Component {
 	}
 
 	handleSortEnd = ({oldIndex, newIndex}) => {
+		console.log('handleSortEnd');
 		this.setState(({values: prevValues}) => ({
 			values: arrayMove(prevValues, oldIndex, newIndex),
 			dragging: false,
@@ -130,14 +139,10 @@ export default class App extends React.Component {
 	}
 
 	async reportValues() {
-		const {
-			extension,
-		} = this.props;
-		const {
-			values,
-		} = this.state;
-
-		return await extension.field.setValue(values.map(({value}) => value));
+		const { extension } = this.props;
+		const { values } = this.state;
+		console.log(values);
+		return await extension.field.setValue(values);
 	}
 }
 
@@ -145,10 +150,15 @@ const Handle = SortableHandle(() => (
 	<div className="drag-handle" />
 ));
 
-const SortableItem = SortableElement(({id, value, onChange, onDelete, autoFocus}) => (
+const SortableItem = SortableElement(({id, song, duration, onChange, onDelete, autoFocus}) => (
 	<li className="item" data-id={id}>
 		<Handle />
-		<input className="cf-form-input" value={value} onChange={onChange} autoFocus={autoFocus} />
+		<input className="cf-form-input song-title" value={song} onChange={onChange} autoFocus={autoFocus} placeholder="song" />
+		<input className="cf-form-input song-duration" value={duration} onChange={onChange} placeholder="duration"/>
+		<div className="is-segue">
+			<input type="checkbox" className="cf-form-option" name="segue"/>
+			<label htmlFor="">Segue?</label>
+		</div>
 		<button type="button" className="cf-btn-secondary delete-button" title="Delete" onClick={onDelete}>
 			&times;
 		</button>
@@ -157,12 +167,13 @@ const SortableItem = SortableElement(({id, value, onChange, onDelete, autoFocus}
 
 const SortableList = SortableContainer(({items, onChange, onDelete, focus, dragging}) => (
 	<ol className={`item-list ${dragging ? 'dragging' : ''}`}>
-		{items.map(({id, value}, index) => (
+		{Object.keys(items).map(({id, song, duration}, index) => (
 			<SortableItem
 				key={id}
 				id={id}
 				index={index}
-				value={value}
+				song={song}
+				duration={duration}
 				onChange={onChange}
 				onDelete={onDelete}
 				autoFocus={index === items.length - 1 && focus}

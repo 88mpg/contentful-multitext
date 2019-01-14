@@ -3,6 +3,6 @@
 	"name": "Multitext",
 	"src": "https://unpkg.com/contentful-multitext@1.0.0",
 	"fieldTypes": [
-		"Symbols"
+		"Object"
 	]
 }

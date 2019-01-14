@@ -12,12 +12,25 @@
 	width: 100%;
 	align-items: center;
 	position: relative;
-	margin-top: 0.25rem;
-	margin-bottom: 0.25rem;
+	margin: 0.25rem;
 }
 
-.item input {
+.song-title {
+	flex: 3;
+}
+
+.song-duration {
 	flex: 1;
+}
+
+.is-segue {
+	display: flex;
+	align-items: center;
+	padding: .5rem;
+}
+
+.is-segue input {
+	margin: 0 0.5rem 0 0;
 }
 
 .delete-button {
@@ -36,7 +49,6 @@
 	margin-right: 0.5rem;
 	user-select: none;
 }
-
 
 .dragging .drag-handle {
 	cursor: grabbing;
