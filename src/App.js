@@ -9,9 +9,9 @@ export default class App extends React.Component {
 		super(props);
 
 		const { extension } = props;
-		const existingValue = extension.field.getValue();
+		const existingValues = extension.field.getValue();
 		this.state = {
-			values: existingValue == null ? [] : [...existingValue],
+			values: existingValues == null ? [] : [...existingValues],
 			focus: false,
 			dragging: false,
 		};
@@ -31,7 +31,6 @@ export default class App extends React.Component {
 	}
 
 	render() {
-		console.log('render');
 		const { values, focus, dragging } = this.state;
 
 		return (
@@ -56,8 +55,8 @@ export default class App extends React.Component {
 	}
 
 	handleAddItemClick = () => {
-		console.log('handleAddItemClick');
 		this.setState(({values: prevValues}) => {
+			console.log('handleAddItemClick', prevValues);
 			return {
 				values: [
 					...prevValues,
@@ -79,6 +78,7 @@ export default class App extends React.Component {
 		const li = event.currentTarget.closest('li');
 		this.setState(({values: prevValues}) => {
 			const index = prevValues.findIndex(({id}) => id === li.dataset.id);
+			console.log('handleDeleteItemClick index', index);
 			if (index === -1) {
 				console.error("Didn't find value in state", event, prevValues);
 				return;
@@ -100,7 +100,8 @@ export default class App extends React.Component {
 		const songDuration = song.querySelector('.song-duration')
 
 		this.setState(({values: prevValues}) => {
-			const index = prevValues.findIndex(({id}) => id === input.closest('li').dataset.id);
+			let index = prevValues.findIndex(({id}) => id === input.closest('li').dataset.id);
+			console.log('handleChange index', index);
 			if (index === -1) {
 				console.error("Didn't find value in state", event, prevValues);
 				return;
@@ -141,7 +142,7 @@ export default class App extends React.Component {
 	async reportValues() {
 		const { extension } = this.props;
 		const { values } = this.state;
-		console.log(values);
+		console.log('reportValues', values);
 		return await extension.field.setValue(values);
 	}
 }
@@ -167,12 +168,12 @@ const SortableItem = SortableElement(({id, song, duration, onChange, onDelete, a
 
 const SortableList = SortableContainer(({items, onChange, onDelete, focus, dragging}) => (
 	<ol className={`item-list ${dragging ? 'dragging' : ''}`}>
-		{Object.keys(items).map(({id, song, duration}, index) => (
+		{items.map(({id, song, duration}, index) => (
 			<SortableItem
 				key={id}
 				id={id}
 				index={index}
-				song={song}
+				value={song}
 				duration={duration}
 				onChange={onChange}
 				onDelete={onDelete}
