@@ -18,14 +18,11 @@ export default class App extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log('componentDidMount');
 		const { extension } = this.props;
-		console.log(this.state.values);
 		extension.window.startAutoResizer();
 	}
 
 	componentWillUnmount() {
-		console.log('componentWillUnmount');
 		const { extension } = this.props;
 		extension.window.stopAutoResizer();
 	}
@@ -48,7 +45,7 @@ export default class App extends React.Component {
 					dragging={dragging}
 				/>
 				<button type="button" className="cf-btn-secondary" onClick={this.handleAddItemClick}>
-					Add item
+					Add Song
 				</button>
 			</React.Fragment>
 		);
@@ -56,14 +53,14 @@ export default class App extends React.Component {
 
 	handleAddItemClick = () => {
 		this.setState(({values: prevValues}) => {
-			console.log('handleAddItemClick', prevValues);
 			return {
 				values: [
 					...prevValues,
 					{
 						id: uuidv1(),
 						song: '',
-						duration: ''
+						duration: '',
+						segue: false
 					}
 				],
 				focus: true,
@@ -74,11 +71,9 @@ export default class App extends React.Component {
 	}
 
 	handleDeleteItemClick = (event) => {
-		console.log('handleDeleteItemClick');
 		const li = event.currentTarget.closest('li');
 		this.setState(({values: prevValues}) => {
 			const index = prevValues.findIndex(({id}) => id === li.dataset.id);
-			console.log('handleDeleteItemClick index', index);
 			if (index === -1) {
 				console.error("Didn't find value in state", event, prevValues);
 				return;
@@ -98,10 +93,10 @@ export default class App extends React.Component {
 		const song = event.currentTarget.closest('li')
 		const songTitle = song.querySelector('.song-title')
 		const songDuration = song.querySelector('.song-duration')
+		const isSegue = song.querySelector('.isSegue').checked
 
 		this.setState(({values: prevValues}) => {
 			let index = prevValues.findIndex(({id}) => id === input.closest('li').dataset.id);
-			console.log('handleChange index', index);
 			if (index === -1) {
 				console.error("Didn't find value in state", event, prevValues);
 				return;
@@ -113,7 +108,8 @@ export default class App extends React.Component {
 					{
 						id: id,
 						song: songTitle.value,
-						duration: songDuration.value
+						duration: songDuration.value,
+						segue: isSegue
 					},
 					...prevValues.slice(index + 1),
 				],
@@ -123,7 +119,6 @@ export default class App extends React.Component {
 	}
 
 	handleSortStart = () => {
-		console.log('handleSortStart');
 		this.setState({
 			dragging: true,
 			focus: false,
@@ -131,7 +126,6 @@ export default class App extends React.Component {
 	}
 
 	handleSortEnd = ({oldIndex, newIndex}) => {
-		console.log('handleSortEnd');
 		this.setState(({values: prevValues}) => ({
 			values: arrayMove(prevValues, oldIndex, newIndex),
 			dragging: false,
@@ -151,14 +145,14 @@ const Handle = SortableHandle(() => (
 	<div className="drag-handle" />
 ));
 
-const SortableItem = SortableElement(({id, song, duration, onChange, onDelete, autoFocus}) => (
+const SortableItem = SortableElement(({id, song, duration, segue, onChange, onDelete, autoFocus}) => (
 	<li className="item" data-id={id}>
 		<Handle />
-		<input className="cf-form-input song-title" value={song} onChange={onChange} autoFocus={autoFocus} placeholder="song" />
-		<input className="cf-form-input song-duration" value={duration} onChange={onChange} placeholder="duration"/>
+		<input className="cf-form-input song-title" value={song} onChange={onChange} autoFocus={autoFocus} />
+		<input className="cf-form-input song-duration" value={duration} onChange={onChange} />
 		<div className="is-segue">
-			<input type="checkbox" className="cf-form-option" name="segue"/>
-			<label htmlFor="">Segue?</label>
+			<input type="checkbox" className="cf-form-option isSegue" name="segue" onChange={onChange} checked={segue} />
+			<label htmlFor="segue">Segue?</label>
 		</div>
 		<button type="button" className="cf-btn-secondary delete-button" title="Delete" onClick={onDelete}>
 			&times;
@@ -173,7 +167,7 @@ const SortableList = SortableContainer(({items, onChange, onDelete, focus, dragg
 				key={id}
 				id={id}
 				index={index}
-				value={song}
+				song={song}
 				duration={duration}
 				onChange={onChange}
 				onDelete={onDelete}
