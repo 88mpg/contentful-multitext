@@ -4,7 +4,7 @@ const version = require('./package.json').version;
 const config = {
 	id: 'multitext',
 	name: 'Multitext',
-	src: `https://unpkg.com/contentful-multitext@${version}`,
+	src: `https://unpkg.com/contentful-song-field@${version}`,
 	fieldTypes: ['Symbols'],
 };
 
