@@ -1,6 +1,6 @@
 {
   "name": "contentful-song-field",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "build/index.html",
   "homepage": "./",
   "dependencies": {

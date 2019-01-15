@@ -2,10 +2,10 @@ const fs = require('fs');
 const version = require('./package.json').version;
 
 const config = {
-	id: 'song-field',
+	id: 'multitext',
 	name: 'Song Field',
 	src: `https://unpkg.com/contentful-song-field@${version}`,
-	fieldTypes: ['Symbols'],
+	fieldTypes: ['Object'],
 };
 
 fs.writeFileSync('./extension.json', JSON.stringify(config, null, '\t') + '\n');
