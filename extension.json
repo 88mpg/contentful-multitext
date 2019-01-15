@@ -1,6 +1,6 @@
 {
-	"id": "multitext",
-	"name": "Multitext",
+	"id": "song-field",
+	"name": "Song Field",
 	"src": "https://unpkg.com/contentful-song-field@1.0.0",
 	"fieldTypes": [
 		"Object"

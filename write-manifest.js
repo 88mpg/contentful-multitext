@@ -2,8 +2,8 @@ const fs = require('fs');
 const version = require('./package.json').version;
 
 const config = {
-	id: 'multitext',
-	name: 'Multitext',
+	id: 'song-field',
+	name: 'Song Field',
 	src: `https://unpkg.com/contentful-song-field@${version}`,
 	fieldTypes: ['Symbols'],
 };

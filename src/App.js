@@ -162,12 +162,13 @@ const SortableItem = SortableElement(({id, song, duration, segue, onChange, onDe
 
 const SortableList = SortableContainer(({items, onChange, onDelete, focus, dragging}) => (
 	<ol className={`item-list ${dragging ? 'dragging' : ''}`}>
-		{items.map(({id, song, duration}, index) => (
+		{items.map(({id, song, duration, segue}, index) => (
 			<SortableItem
 				key={id}
 				id={id}
 				index={index}
 				song={song}
+				segue={segue}
 				duration={duration}
 				onChange={onChange}
 				onDelete={onDelete}
